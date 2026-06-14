@@ -14,6 +14,8 @@ export default function CaterersPage() {
     const [search, setSearch] = useState("");
     const [maxPrice, setMaxPrice] = useState("");
     const [loading, setLoading] = useState(true);
+    const [page, setPage] = useState(1);
+    const [totalPages, setTotalPages] = useState(1);
 
     useEffect(() => {
         let filtered = [...caterers];
@@ -36,19 +38,20 @@ export default function CaterersPage() {
     useEffect(() => {
         const loadCaterers = async () => {
             try {
-            const data = await getCaterers();
+                const response = await getCaterers(page, 6);
 
-            setCaterers(data);
-            setFilteredCaterers(data);
+                setCaterers(response.data);
+                setFilteredCaterers(response.data);
+                setTotalPages(response.pagination.totalPages);
             } catch (error) {
-            console.error("Failed to fetch caterers:", error);
+                console.error("Failed to fetch caterers:", error);
             } finally {
-            setLoading(false);
+                setLoading(false);
             }
         };
 
         loadCaterers();
-        }, []);
+        }, [page]);
 
 
     return (
@@ -114,6 +117,27 @@ export default function CaterersPage() {
                 ))}
             </div>
             )}
+        </div>
+        <div className="mt-6 flex items-center justify-center gap-4">
+            <button
+                disabled={page === 1}
+                onClick={() => setPage((prev) => prev - 1)}
+                className="rounded bg-gray-200 px-4 py-2 disabled:opacity-50"
+            >
+                Previous
+            </button>
+
+            <span>
+                Page {page} of {totalPages}
+            </span>
+
+            <button
+                disabled={page === totalPages}
+                onClick={() => setPage((prev) => prev + 1)}
+                className="rounded bg-gray-200 px-4 py-2 disabled:opacity-50"
+            >
+                Next
+            </button>
         </div>
         </div>
     );

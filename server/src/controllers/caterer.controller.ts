@@ -6,10 +6,16 @@ export const getAllCaterers = async (
   res: Response
 ) => {
   try {
-    const caterers =
-      await catererService.getAllCaterers();
+    const page = Number(req.query.page) || 1;
+    const limit = Number(req.query.limit) || 10;
 
-    res.status(200).json(caterers);
+    const result =
+      await catererService.getAllCaterers(
+        page,
+        limit
+      );
+
+    res.status(200).json(result);
   } catch (error) {
     res.status(500).json({
       message: "Server Error",
